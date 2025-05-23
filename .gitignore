@@ -1,0 +1,18 @@
+/backend/node_modules
+/frontend/node_modules
+/frontend/.next
+.DS_Store
+# local env files
+.env*.local
+# debug
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/.pnpm-debug.log*
+# typescript
+/frontend/*.tsbuildinfo
+/frontend/next-env.d.ts
+/frontend/*.code-workspace
+/frontend/storybook-static
+/frontend/.yarn/install-state.gz
+/frontend/out
