@@ -9,16 +9,7 @@ import {
   ItemCardTitle,
   ItemCardDescription,
 } from './Product_style';
-
-type ProductProps = {
-  name: string;
-  description: string;
-  imageUrl: string;
-  altTxt: string;
-  _id: string;
-  price: number;
-  colors: string[];
-};
+import { ProductType } from '@/types/product';
 
 export default function Product({
   name,
@@ -26,7 +17,8 @@ export default function Product({
   imageUrl,
   altTxt,
   _id,
-}: ProductProps) {
+}: ProductType) {
+  console.log(imageUrl);
   return (
     <ItemLink href={`/product?id=${_id}`}>
       <ItemCard>
