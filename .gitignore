@@ -16,3 +16,4 @@
 /frontend/storybook-static
 /frontend/.yarn/install-state.gz
 /frontend/out
+.env
