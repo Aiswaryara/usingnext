@@ -5,12 +5,14 @@ import Product from '../../components/Product';
 import { ProductType } from '@/types/product';
 import { useEffect, useState } from 'react';
 
+
+
 const StyledAppWrapper = styled.div`
   font-family: 'Montserrat', sans-serif;
   margin: 0;
   color: white;
   min-width: 300px;
-  background-color: #3498db;
+  background-color: #3498db; /* You can adjust this background as needed */
   padding: 20px 0;
 `;
 
@@ -24,54 +26,52 @@ const StyledProductList = styled.div`
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<ProductType[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const base = process.env.NEXT_PUBLIC_BACKEND_API || '';
-    const url = `${base.replace(/\/+$/, '')}/api/products`;
-  
-
     async function getProducts() {
+      const base = (process.env.NEXT_PUBLIC_BACKEND_API || '').replace(/\/+$/, '');
+      const url = base ? `${base}/api/products` : '/api/products';
+
       try {
-       
-        const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
-   
-        if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+        const response = await fetch(url, { headers: { Accept: 'application/json' } });
 
-        const json = (await response.json()) as unknown;
+        if (!response.ok) {
+          throw new Error(`Products fetch failed: ${response.status} ${response.statusText}`);
+        }
 
-       
-        const list = Array.isArray(json) ? json : (json as any)?.products;
-        if (!Array.isArray(list)) throw new Error('API did not return an array');
-        setProducts(list as ProductType[]);
-     
-      } catch (e) {
-        
-        setError(e instanceof Error ? e.message : 'Failed to fetch products');
-       
+        const result: ProductType[] = await response.json();
+        setProducts(result);
+        setErrorMsg(null);
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        console.error(message);
+        setErrorMsg(message);
       } finally {
         setIsLoading(false);
       }
     }
 
     getProducts();
-
-    return () => controller.abort();
-
   }, []);
 
   if (isLoading) {
     return <div>...............fetching products</div>;
   }
 
+  if (errorMsg) {
+    return (
+      <StyledAppWrapper>
+        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: 12 }}>
+          <h2 style={{ margin: 0 }}>Couldn’t load products</h2>
+          <p style={{ marginTop: 8, opacity: 0.9, fontSize: 14 }}>{errorMsg}</p>
+        </div>
+      </StyledAppWrapper>
+    );
+  }
+
   return (
     <StyledAppWrapper>
-  
-      {error && <div style={{ padding: 16 }}>Couldn’t load products: {error}</div>}
-      {!error && products.length === 0 && <div style={{ padding: 16 }}>No products found.</div>}
-
-
       <StyledProductList>
         {products.map((product) => (
           <Product
