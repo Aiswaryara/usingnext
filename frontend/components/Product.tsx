@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-  ItemLink,
+//to avoid <a> inside an another<a> , to avoid nested anchor tags
   ItemCard,
   ItemCardImageWrapper,
   ItemCardImage,
@@ -16,18 +16,14 @@ export default function Product({
   description,
   imageUrl,
   altTxt,
-  _id,
 }: ProductType) {
-  console.log(imageUrl);
   return (
-    <ItemLink href={`/product?id=${_id}`}>
-      <ItemCard>
-        <ItemCardImageWrapper>
-          <ItemCardImage src={imageUrl} alt={altTxt} />
-        </ItemCardImageWrapper>
-        <ItemCardTitle>{name}</ItemCardTitle>
-        <ItemCardDescription>{description}</ItemCardDescription>
-      </ItemCard>
-    </ItemLink>
+    <ItemCard>
+      <ItemCardImageWrapper>
+        <ItemCardImage src={imageUrl} alt={altTxt || name} />
+      </ItemCardImageWrapper>
+      <ItemCardTitle>{name}</ItemCardTitle>
+      <ItemCardDescription>{description}</ItemCardDescription>
+    </ItemCard>
   );
 }
