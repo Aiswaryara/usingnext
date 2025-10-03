@@ -5,14 +5,12 @@ import Product from '../../components/Product';
 import { ProductType } from '@/types/product';
 import { useEffect, useState } from 'react';
 
-
-
 const StyledAppWrapper = styled.div`
   font-family: 'Montserrat', sans-serif;
   margin: 0;
   color: white;
   min-width: 300px;
-  background-color: #3498db; /* You can adjust this background as needed */
+  background-color: #3498db; // You can adjust this background as needed
   padding: 20px 0;
 `;
 
@@ -26,27 +24,32 @@ const StyledProductList = styled.div`
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState<ProductType[]>([]);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function getProducts() {
-      const base = (process.env.NEXT_PUBLIC_BACKEND_API || '').replace(/\/+$/, '');
-      const url = base ? `${base}/api/products` : '/api/products';
+      const url = `${process.env.NEXT_PUBLIC_BACKEND_API}/api/products`;
 
       try {
-        const response = await fetch(url, { headers: { Accept: 'application/json' } });
-
+        const response = await fetch(url);
         if (!response.ok) {
-          throw new Error(`Products fetch failed: ${response.status} ${response.statusText}`);
+          setError(`Response status: ${response.status}`)
+
+          
         }
 
         const result: ProductType[] = await response.json();
-        setProducts(result);
-        setErrorMsg(null);
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : String(err);
-        console.error(message);
-        setErrorMsg(message);
+        setProducts([...products, ...result]);
+
+        console.log(result);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          setError(`Response status: ${error.message}`)
+        } else {
+          console.log(String(error));
+          setError(`Response status: ${String(error)}`)
+        }
       } finally {
         setIsLoading(false);
       }
@@ -58,17 +61,10 @@ export default function Home() {
   if (isLoading) {
     return <div>...............fetching products</div>;
   }
-
-  if (errorMsg) {
-    return (
-      <StyledAppWrapper>
-        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: 12 }}>
-          <h2 style={{ margin: 0 }}>Couldn’t load products</h2>
-          <p style={{ marginTop: 8, opacity: 0.9, fontSize: 14 }}>{errorMsg}</p>
-        </div>
-      </StyledAppWrapper>
-    );
+    if (error) {
+    return <div>{error}</div>;
   }
+  
 
   return (
     <StyledAppWrapper>
